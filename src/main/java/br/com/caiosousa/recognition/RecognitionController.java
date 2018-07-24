@@ -1,4 +1,4 @@
-package hello;
+package br.com.caiosousa.recognition;
 
 
 import java.nio.ByteBuffer;
@@ -26,56 +26,47 @@ import software.amazon.awssdk.services.rekognition.model.S3Object;
 
 @RestController
 public class RecognitionController {
+	
+	private static final String KEY_TEMPLATE = "%s.%s";
 
 	@RequestMapping(path = "/detectLabelsFromStorage", method = RequestMethod.GET)
 	public List<RecognitionLabel> detectLabelsFromStorage(@RequestParam(name = "imageName", defaultValue = "erro.png") String imageName) {
 
-		RekognitionClient rekognition = RekognitionClient.builder()
-				.region(Region.US_WEST_2)
-				.build();
-		
-		DetectLabelsResponse detectLabelsResponse = 
-				rekognition.detectLabels(
-					DetectLabelsRequest.builder().image(
-							Image.builder().s3Object(
-									S3Object.builder()
-									.bucket(Constants.S3_BUCKET.value())
-									.name(imageName)
+		final DetectLabelsResponse detectLabelsResponse =
+				rekognitionClient()
+					.detectLabels(DetectLabelsRequest.builder()
+							.image(Image.builder()
+									.s3Object(S3Object.builder()
+											.bucket(Environment.S3_BUCKET_NAME.value())
+											.name(imageName)
+											.build())
 									.build())
-							.build())
-					.build());
+							.build());
 		
-		List<RecognitionLabel> labels = detectLabelsResponse.labels().stream()
-				.map((label) -> new RecognitionLabel(label.name(), label.confidence())).collect(Collectors.toList());
+		return detectLabelsResponse.labels()
+				.stream()
+				.map((label) -> new RecognitionLabel(label.name(), label.confidence()))
+				.collect(Collectors.toList());
 
-		return labels;
-		
 	}
-	
+
 	@RequestMapping(path = "/matchFacesWithStorage", method = RequestMethod.POST)
 	public CompareFacesResult detectFacesFromStorage(@RequestBody ImageUpload imageUpload) throws JsonProcessingException {
 
-		RekognitionClient rekognition = RekognitionClient.builder()
-				.region(Region.US_WEST_2)
-				.build();
-		
-		CompareFacesResponse compareFacesResponse = 
-				rekognition.compareFaces(
-					CompareFacesRequest.builder()
-						.sourceImage(
-								Image.builder().bytes(
-									ByteBuffer.wrap(Base64.getDecoder().decode(imageUpload.getContent())))
-								.build())
-						.targetImage(
-							Image.builder().s3Object(
-									S3Object.builder()
-									.bucket(Constants.S3_BUCKET.value())
-									.name(String.format(Constants.KEY_TEMPLATE.value(), imageUpload.getName(), imageUpload.getExtension()))
+		final CompareFacesResponse compareFacesResponse = 
+				rekognitionClient()
+					.compareFaces(CompareFacesRequest.builder()
+							.sourceImage(Image.builder()
+									.bytes(ByteBuffer.wrap(Base64.getDecoder().decode(imageUpload.getContent()))).build())
+							.targetImage(Image.builder()
+									.s3Object(S3Object.builder()
+											.bucket(Environment.S3_BUCKET_NAME.value())
+											.name(String.format(KEY_TEMPLATE, imageUpload.getName(), imageUpload.getExtension()))
+											.build())
 									.build())
-							.build())
-					.build());
+							.build());
 		
-		List<CompareFacesMatch> details = compareFacesResponse.faceMatches();
+		final List<CompareFacesMatch> details = compareFacesResponse.faceMatches();
 		
 		if (details.size() != 1) {
 			return new CompareFacesResult(0F);
@@ -88,22 +79,25 @@ public class RecognitionController {
 	@RequestMapping(path = "/detectLabels", method = RequestMethod.POST)
 	public List<RecognitionLabel> detectLabels(@RequestBody ImageUpload imageUpload) {
 
-		RekognitionClient rekognition = RekognitionClient.builder()
+		final DetectLabelsResponse detectLabelsResponse = 
+				rekognitionClient()
+					.detectLabels(DetectLabelsRequest.builder()
+							.image(Image.builder()
+									.bytes(ByteBuffer.wrap(Base64.getDecoder().decode(imageUpload.getContent())))
+									.build())
+							.build());
+		
+		return detectLabelsResponse.labels()
+				.stream()
+				.map((label) -> new RecognitionLabel(label.name(), label.confidence()))
+				.collect(Collectors.toList());
+
+	}
+	
+	private RekognitionClient rekognitionClient() {
+		return RekognitionClient.builder()
 				.region(Region.US_WEST_2)
 				.build();
-		
-		DetectLabelsResponse detectLabelsResponse = 
-				rekognition.detectLabels(
-					DetectLabelsRequest.builder().image(
-							Image.builder().bytes(
-									ByteBuffer.wrap(Base64.getDecoder().decode(imageUpload.getContent())))
-							.build())
-					.build());
-		
-		List<RecognitionLabel> labels = detectLabelsResponse.labels().stream()
-				.map((label) -> new RecognitionLabel(label.name(), label.confidence())).collect(Collectors.toList());
-
-		return labels;
-		
 	}
+
 }

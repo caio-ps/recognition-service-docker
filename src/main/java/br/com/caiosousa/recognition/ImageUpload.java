@@ -1,4 +1,4 @@
-package hello;
+package br.com.caiosousa.recognition;
 
 public class ImageUpload {
 
