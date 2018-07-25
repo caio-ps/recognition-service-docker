@@ -10,7 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
 import br.com.caiosousa.recognition.Environment;
 
 @SpringBootApplication
-@ComponentScan("br.com.caiosousa.recognition")
+@ComponentScan({ "br.com.caiosousa.recognition", "br.com.caiosousa.doc" })
 public class Application {
 
 	public static void main(String[] args) {
