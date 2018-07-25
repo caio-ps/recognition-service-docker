@@ -1,6 +1,6 @@
 ## Recognition Servicer (dockerized)
 
-### Install docker image (on docker hub):
+### Install docker image (from docker hub):
 $ docker pull caiopereirasousa/recognition-service
 
 ### Running a container
@@ -16,4 +16,4 @@ Replace the other parameters with your AWS information.
 * __AWS_SECRET_ACCESS_KEY__ : AWS credential used to access rekognition and S3 services
 
 ### API Documentation
-After running a container, access the Swagger API Documentation: _http://<host>:<port>/swagger-ui.html_
+After running a container, access the Swagger API Documentation: _http://{{host}}:{{port}}/swagger-ui.html_
