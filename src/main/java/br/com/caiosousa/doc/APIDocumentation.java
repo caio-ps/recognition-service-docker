@@ -7,9 +7,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import springfox.documentation.builders.ApiInfoBuilder;
 
 @Configuration
 @EnableSwagger2
@@ -21,7 +24,17 @@ public class APIDocumentation extends WebMvcConfigurationSupport {
 				.select()
 				.apis(RequestHandlerSelectors.basePackage("br.com.caiosousa.recognition"))
 				.paths(PathSelectors.any())
-				.build();
+				.build()
+				.apiInfo(metaData());
+	}
+	
+	private ApiInfo metaData() {
+        return new ApiInfoBuilder()
+                .title("Recognition Service API")
+                .description("\"APIs for image analyzing\"")
+                .version("0.0.1")
+                .contact(new Contact("Caio Pereira", "https://medium.com/@caio.psw", "caio.psw@gmail.com"))
+                .build();
 	}
 
 	@Override
