@@ -5,7 +5,11 @@ public class RecognitionLabel {
 	private String name;
 	private Float confidence;
 
-	public RecognitionLabel(String name, Float confidence) {
+	public static RecognitionLabel build(final String name, final Float confidence) {
+		return new RecognitionLabel(name, confidence);
+	}
+	
+	private RecognitionLabel(final String name, final Float confidence) {
 		super();
 		this.name = name;
 		this.confidence = confidence;
