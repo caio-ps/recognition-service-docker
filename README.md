@@ -4,7 +4,7 @@
 $ docker pull caiopereirasousa/recognition-service:v1.0.0
 
 ### Running a container
-$ docker run -p <port_number>:8080 -e S3_BUCKET_NAME=<your_s3_bucket> -e AWS_ACCESS_KEY_ID=<your_aws_access_key> -e AWS_SECRET_ACCESS_KEY=<your_aws_secret_access> -d caiopereirasousa/recognition-service
+$ docker run -p <port_number>:8080 -e S3_BUCKET_NAME=<your_s3_bucket> -e AWS_ACCESS_KEY_ID=<your_aws_access_key> -e AWS_SECRET_ACCESS_KEY=<your_aws_secret_access> -d caiopereirasousa/recognition-service:v1.0.0
 
 ### Parameters
 Replace <port_number> with the number of the port you want to access the REST APIs.
